@@ -1,6 +1,6 @@
 {
   "name": "zerotier-one-api-spec",
-  "repository": "https://github.com/zerotier/zerotier-one-api-spec",
+  "repository": "https://github.com/laduke/curly-octo-guacamole",
   "scripts": {
     "start": "run-s build watch",
     "test": "tsx test/*test.ts",
