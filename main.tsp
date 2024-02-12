@@ -259,7 +259,7 @@ model JoinedNetwork extends Record<unknown> {
   assignedAddresses: string[];
   bridge: boolean;
   broadcastEnabled: boolean;
-  dns?: NetworkDNS;
+  dns: NetworkDNS | EmptyArray;
   @key id: ZTNetworkID;
   mac: string;
   mtu: MTU;
@@ -357,7 +357,7 @@ model ControllerNetworkProps {
   name: string;
   enableBroadcast: boolean;
   mtu: MTU;
-  dns: NetworkDNS;
+  dns: NetworkDNS | EmptyArray;
   private: boolean;
   ipAssignmentPools: {
     ipRangeStart: IP;
@@ -485,6 +485,10 @@ model NetworkDNS {
   domain: domain | "";
   servers: IP[];
 }
+
+@minItems(0)
+@maxItems(0)
+model EmptyArray is Array<unknown>;
 
 @format("hostname")
 scalar domain extends string;
