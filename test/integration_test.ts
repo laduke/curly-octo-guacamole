@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { describe, it } from "node:test";
+import { describe, it, test } from "node:test";
 import assert from "node:assert";
 
 import createClient from "openapi-fetch";
@@ -43,6 +43,20 @@ function createValidator(schemaId: string) {
   return { validate, schema };
 }
 
+function assertValid({ validate, schema }, data: object | undefined) {
+  const valid = validate(data);
+  if (!valid) {
+    const output = betterAjvErrors(
+      schema,
+      data,
+      validate.errors as DefinedError[],
+    );
+    console.error(JSON.stringify(validate.errors, null, 4));
+    console.error(JSON.stringify(data, null, 4));
+    assert.fail(output);
+  }
+}
+
 describe("GET endpoints", async function () {
   const map: { path: PathsWithMethod<paths, "get">; id: string }[] = [
     { path: "/status", id: "NodeStatus" },
@@ -53,25 +67,34 @@ describe("GET endpoints", async function () {
 
   for (const { path, id } of map) {
     it(id, async () => {
-      const { validate, schema } = createValidator(id);
+      const validator = createValidator(id);
 
       const client = createCreateClient();
 
       const { data } = await client.GET(path, {});
       assert.ok(data);
 
-      const valid = validate(data);
-      if (!valid) {
-        const output = betterAjvErrors(
-          schema,
-          data,
-          validate.errors as DefinedError[],
-        );
-        assert.fail(output);
-        // assert.fail(
-        //   JSON.stringify(validate.errors, null, 2)
-        // );
-      }
+      assertValid(validator, data);
     });
   }
+});
+
+test("probably flakey", async function () {
+  const client = createCreateClient();
+
+  const statusValidator = createValidator("NodeStatus");
+  const { data: statusData } = await client.GET("/status", {});
+  assert.ok(statusData);
+  assertValid(statusValidator, statusData);
+
+  const { data: networkData } = await client.POST("/controller/network", {
+    body: {},
+  });
+
+  const cnValidator = createValidator("ControllerNetwork");
+
+  const nwid = networkData?.id ?? "";
+  assert.ok(nwid.includes(statusData.address));
+
+  assertValid(cnValidator, networkData);
 });
