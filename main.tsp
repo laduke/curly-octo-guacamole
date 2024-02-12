@@ -168,17 +168,15 @@ namespace Root {
           };
         } | AuthError | NotFoundError;
       }
-      @route("/{controllerId}")
+      @route("/")
       namespace randomNetwork {
         @doc("Create a new network with a random ID.")
         @summary("Generate Random Network ID")
         @post
         op randomNetwork(
           @doc("Node ID of the controller")
-          @path
-          controllerId: ZTAddress,
-
-          @body network: ControllerNetworkRequest,
+          @body
+          network: ControllerNetworkRequest,
         ): ControllerNetwork | AuthError | NotFoundError;
       }
     }
