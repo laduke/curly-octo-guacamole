@@ -8,7 +8,7 @@ using TypeSpec.JsonSchema;
 
 @service({
   title: "ZeroTierOne Service",
-  version: "2024-01-18",
+  version: "2024-02-13",
 })
 @info({
   license: {
@@ -24,6 +24,7 @@ using TypeSpec.JsonSchema;
 <p>For example: <code>curl -H "X-ZT1-Auth: $TOKEN" http://localhost:9993/status</code> </p>
 <p>The token can be found in: <ul> <li>Mac :: ~/Library/Application Support/ZeroTier/authtoken.secret</li> <li>Windows :: \\ProgramData\\ZeroTier\\One</li> <li>Linux :: /var/lib/zerotier-one</li> </ul> </p>
 <p>You can get the OpenAPI spec here as well: <code>https://docs.zerotier.com/openapi/servicev1.json</code></p>
+<p>This spec is written against zerotier-one 1.12.x</p>
 """)
 namespace Root {
   @tag("Node Status")
@@ -420,7 +421,6 @@ model ControllerNetworkMemberProps {
   authorized: boolean;
   activeBridge: boolean;
   ipAssignments: IP[];
-  name: string;
   noAutoAssignIps: boolean;
   ssoExempt: boolean;
 }
