@@ -132,7 +132,7 @@ describe("Controller API", async function () {
   });
 
   /// unstable
-  it("Lists valid networks", async () => {
+  it("Lists full networks", async () => {
     const { data, response } = await client.GET("/unstable/controller/network");
     if (response.status !== 404) {
       assert(data);
