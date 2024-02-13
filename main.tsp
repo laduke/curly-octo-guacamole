@@ -156,6 +156,18 @@ namespace Root {
 
               @body network: ControllerNetworkMemberRequest,
             ): ControllerNetworkMember | AuthError | NotFoundError;
+
+            @summary("Delete Network Member")
+            @delete
+            op delNetworkMember(
+              @doc("Node ID of the Network Member")
+              @path
+              node_id: ZTAddress,
+
+              @doc("Network ID of the Network")
+              @path
+              network_id: ZTNetworkID,
+            ): ControllerNetworkMember | AuthError | NotFoundError;
           }
         }
         @route("/member2")
@@ -248,10 +260,10 @@ model NodeStatus {
   publicIdentity: string;
   tcpFallbackActive: boolean;
   version: string;
-  versionBuild: VersionDigit;
-  versionMajor: VersionDigit;
-  versionMinor: VersionDigit;
-  versionRev: VersionDigit;
+  versionBuild: VersionDigit | -1;
+  versionMajor: VersionDigit | -1;
+  versionMinor: VersionDigit | -1;
+  versionRev: VersionDigit | -1;
 }
 
 @jsonSchema
@@ -265,7 +277,7 @@ model JoinedNetwork extends Record<unknown> {
   mac: string;
   mtu: MTU;
   multicastSubscriptions: Array<{
-    adi: uint16;
+    adi: uSafeint;
     mac: string;
   }>;
 
@@ -403,21 +415,21 @@ model ControllerNetworkMember {
   authenticationExpiryTime: uSafeint;
   capabilities: uSafeint[];
   creationTime: uSafeint;
-  identity: string;
-  lastAuthorizedCredential: string;
+  identity?: string;
+  lastAuthorizedCredential: string | null;
   lastAuthorizedCredentialType: string;
   lastAuthorizedTime: uSafeint;
   lastDeauthorizedTime: uSafeint;
   nwid: ZTNetworkID;
   objtype: "member";
   remoteTraceLevel: uSafeint;
-  remoteTraceTarget: string;
+  remoteTraceTarget: string | null;
   revision: VersionDigit;
   tags: unknown; //TODO
-  vMajor: VersionDigit;
-  vMinor: VersionDigit;
-  vProto: VersionDigit;
-  vRev: VersionDigit;
+  vMajor: VersionDigit | -1;
+  vMinor: VersionDigit | -1;
+  vProto: VersionDigit | -1;
+  vRev: VersionDigit | -1;
 }
 
 @jsonSchema
@@ -505,7 +517,8 @@ model EmptyArray is Array<unknown>;
 @format("hostname")
 scalar domain extends string;
 
-alias ControllerNetworkMemberList = Record<int32>;
+@jsonSchema
+model ControllerNetworkMemberList is Record<int32>;
 
 @minValue(0)
 scalar Port extends uint16;
