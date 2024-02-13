@@ -172,6 +172,52 @@ describe("API exercise", async function () {
     assertValid(networkDelValidator, networkData3);
   });
 
+  describe("Joining networks", async () => {
+    const network_id = "ff00160016000000";
+
+    it("Joins a network", async () => {
+      const { data } = await client.POST("/network/{network_id}", {
+        body: {},
+        params: { path: { network_id } },
+      });
+      assert(data);
+      const validator = createValidator("JoinedNetwork");
+      assertValid(validator, data);
+    });
+
+    it("Gets the joined networks", async () => {
+      const { data } = await client.GET("/network");
+      assert(data);
+
+      const validator = createValidator("JoinedNetworks");
+      assertValid(validator, data);
+
+      const ids = data.map((network) => network.id);
+      assert.ok(ids.includes(network_id));
+    });
+
+    it("Gets the joined network by ID", async () => {
+      const { data } = await client.GET("/network/{network_id}", {
+        params: { path: { network_id } },
+      });
+      assert(data);
+
+      const validator = createValidator("JoinedNetwork");
+      assertValid(validator, data);
+
+      assert.equal(network_id, data.id);
+    });
+
+    it("Leaves the joined network by ID", async () => {
+      const { data } = await client.DELETE("/network/{network_id}", {
+        params: { path: { network_id } },
+      });
+      assert(data);
+
+      const validator = createValidator("LeaveResult");
+      assertValid(validator, data);
+    });
+  });
   /// unstable
   it("Lists full networks", async () => {
     const { data, response } = await client.GET("/unstable/controller/network");
@@ -185,12 +231,15 @@ describe("API exercise", async function () {
   });
 
   it("Lists full network members", async () => {
-    const { data, response } = await client.GET("/unstable/controller/network/{network_id}/member");
+    const { data, response } = await client.GET(
+      "/unstable/controller/network/{network_id}/member",
+    );
     if (response.status !== 404) {
       assert(data);
-      console.log(data)
 
-      const networksValidator = createValidator("ControllerNetworkMemberListFull");
+      const networksValidator = createValidator(
+        "ControllerNetworkMemberListFull",
+      );
 
       assertValid(networksValidator, data);
     }
