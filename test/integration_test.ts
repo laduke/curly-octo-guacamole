@@ -96,15 +96,6 @@ describe("Controller API", async function () {
     network_id = networkData.id;
   });
 
-  it("Lists valid networks", async () => {
-    const { data } = await client.GET("/unstable/controller/network");
-    assert(data);
-
-    const networksValidator = createValidator("ControllerNetworks");
-
-    assertValid(networksValidator, data);
-  });
-
   it("Gets the network by ID", async () => {
     const { data } = await client.GET("/controller/network/{network_id}", {
       params: { path: { network_id } },
@@ -116,6 +107,16 @@ describe("Controller API", async function () {
     assertValid(networkValidator, data);
   });
 
+  it("Lists networks ", async () => {
+    const { data } = await client.GET("/controller/network");
+    assert(data);
+
+    const networkValidator = createValidator("ControllerNetworkIDList");
+
+    assertValid(networkValidator, data);
+    assert.ok(data.includes(network_id));
+  });
+
   it("Deletes the network by ID", async () => {
     const { data: networkData3 } = await client.DELETE(
       "/controller/network/{network_id}",
@@ -123,5 +124,15 @@ describe("Controller API", async function () {
     );
     const networkDelValidator = createValidator("ControllerNetwork");
     assertValid(networkDelValidator, networkData3);
+  });
+
+  /// unstable
+  it("Lists valid networks", async () => {
+    const { data } = await client.GET("/unstable/controller/network");
+    assert(data);
+
+    const networksValidator = createValidator("ControllerNetworks");
+
+    assertValid(networksValidator, data);
   });
 });

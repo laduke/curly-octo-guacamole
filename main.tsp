@@ -94,7 +94,7 @@ namespace Root {
       @doc("List IDs of all networks hosted by this controller")
       @summary("List Network IDs")
       @get
-      op readNetworks(): ZTNetworkID[] | AuthError;
+      op readNetworks(): ControllerNetworkIDList | AuthError;
 
       @route("/{network_id}")
       namespace network {
@@ -433,6 +433,9 @@ model ControllerNetworkMemberProps {
   noAutoAssignIps: boolean;
   ssoExempt: boolean;
 }
+
+@jsonSchema
+model ControllerNetworkIDList is ZTNetworkID[];
 
 @error
 model AuthError {
