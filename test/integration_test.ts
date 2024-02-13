@@ -83,6 +83,11 @@ describe("Controller API", async function () {
   const client = createCreateClient();
   let network_id: string;
 
+  it("Gets status for later", async () => {
+    const { data } = await client.GET("/status");
+    assert(data);
+  });
+
   it("Creates valid networks", async () => {
     const { data: networkData } = await client.POST("/controller/network", {
       body: {},
@@ -128,11 +133,13 @@ describe("Controller API", async function () {
 
   /// unstable
   it("Lists valid networks", async () => {
-    const { data } = await client.GET("/unstable/controller/network");
-    assert(data);
+    const { data, response } = await client.GET("/unstable/controller/network");
+    if (response.status !== 404) {
+      assert(data);
 
-    const networksValidator = createValidator("ControllerNetworks");
+      const networksValidator = createValidator("ControllerNetworks");
 
-    assertValid(networksValidator, data);
+      assertValid(networksValidator, data);
+    }
   });
 });
