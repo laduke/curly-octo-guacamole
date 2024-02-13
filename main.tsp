@@ -112,6 +112,12 @@ namespace Root {
           @body network: ControllerNetworkRequest,
         ): ControllerNetwork | AuthError | NotFoundError;
 
+        @summary("Delete Network")
+        @delete
+        op deleteNetwork(
+          @path network_id: ZTNetworkID,
+        ): ControllerNetwork | AuthError | NotFoundError;
+
         @route("/member")
         namespace networkMembers {
           @doc("Object containing all member IDs as keys and their memberRevisionCounter values as values")
@@ -191,12 +197,7 @@ namespace Root {
         @doc("List all networks")
         @summary("List all networks")
         @get
-        op readNetworks2(): {
-          data: ControllerNetworkMemberMeta[];
-          meta: {
-            networkCount: uSafeint;
-          };
-        } | AuthError;
+        op readNetworks2(): ControllerNetworks | AuthError;
         @route("/{network_id}")
         namespace network_id {
           @route("/member")
@@ -348,6 +349,22 @@ model ControllerNetwork {
   tags: NetworkTags;
 }
 
+model ControllerNetworkMeta {
+  ...ControllerNetwork;
+  meta: {
+    authorizedMemberCount: uSafeint;
+    totalMemberCount: uSafeint;
+  };
+}
+
+@jsonSchema
+model ControllerNetworks {
+  data: ControllerNetworkMeta[];
+  meta: {
+    networkCount: uSafeint;
+  };
+}
+
 @jsonSchema
 model ControllerNetworkRequest {
   ...OptionalProperties<ControllerNetworkProps>;
@@ -376,14 +393,6 @@ model ControllerNetworkProps {
     target: IP;
     via?: IP | null;
   }[];
-}
-
-model ControllerNetworkMemberMeta {
-  ...ControllerNetworkMember;
-  meta: {
-    authorizedMemberCount: uSafeint;
-    totalMemberCount: uSafeint;
-  };
 }
 
 @jsonSchema

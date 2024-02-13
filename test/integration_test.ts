@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { describe, it, test } from "node:test";
+import { describe, it } from "node:test";
 import assert from "node:assert";
 
 import createClient from "openapi-fetch";
@@ -79,22 +79,49 @@ describe("GET endpoints", async function () {
   }
 });
 
-test("probably flakey", async function () {
+describe("Controller API", async function () {
   const client = createCreateClient();
+  let network_id: string;
 
-  const statusValidator = createValidator("NodeStatus");
-  const { data: statusData } = await client.GET("/status", {});
-  assert.ok(statusData);
-  assertValid(statusValidator, statusData);
+  it("Creates valid networks", async () => {
+    const { data: networkData } = await client.POST("/controller/network", {
+      body: {},
+    });
+    assert(networkData);
 
-  const { data: networkData } = await client.POST("/controller/network", {
-    body: {},
+    const cnValidator = createValidator("ControllerNetwork");
+
+    assertValid(cnValidator, networkData);
+
+    network_id = networkData.id;
   });
 
-  const cnValidator = createValidator("ControllerNetwork");
+  it("Lists valid networks", async () => {
+    const { data } = await client.GET("/unstable/controller/network");
+    assert(data);
 
-  const nwid = networkData?.id ?? "";
-  assert.ok(nwid.includes(statusData.address));
+    const networksValidator = createValidator("ControllerNetworks");
 
-  assertValid(cnValidator, networkData);
+    assertValid(networksValidator, data);
+  });
+
+  it("Gets the network by ID", async () => {
+    const { data } = await client.GET("/controller/network/{network_id}", {
+      params: { path: { network_id } },
+    });
+    assert(data);
+
+    const networkValidator = createValidator("ControllerNetwork");
+
+    assertValid(networkValidator, data);
+  });
+
+  it("Deletes the network by ID", async () => {
+    const { data: networkData3 } = await client.DELETE(
+      "/controller/network/{network_id}",
+      { params: { path: { network_id } } },
+    );
+    const networkDelValidator = createValidator("ControllerNetwork");
+    assertValid(networkDelValidator, networkData3);
+  });
 });
