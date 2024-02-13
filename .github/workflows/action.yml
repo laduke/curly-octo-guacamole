@@ -12,7 +12,7 @@ permissions:
   id-token: write
 
 jobs:
-  build:
+  build_lint_etc:
 
     runs-on: ubuntu-latest
 
@@ -39,7 +39,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: index.html
-          path: static/index.html
+          path: dist/index.html
 
       - name: Archive built openapi spec
         uses: actions/upload-artifact@v4
