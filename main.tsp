@@ -8,7 +8,7 @@ using TypeSpec.JsonSchema;
 
 @service({
   title: "ZeroTierOne Service",
-  version: "2024-02-13",
+  version: "2024-02-13::1.12.2",
 })
 @info({
   license: {
@@ -24,7 +24,6 @@ using TypeSpec.JsonSchema;
 <p>For example: <code>curl -H "X-ZT1-Auth: $TOKEN" http://localhost:9993/status</code> </p>
 <p>The token can be found in: <ul> <li>Mac :: ~/Library/Application Support/ZeroTier/authtoken.secret</li> <li>Windows :: \\ProgramData\\ZeroTier\\One</li> <li>Linux :: /var/lib/zerotier-one</li> </ul> </p>
 <p>You can get the OpenAPI spec here as well: <code>https://docs.zerotier.com/openapi/servicev1.json</code></p>
-<p>This spec is written against zerotier-one 1.12.x</p>
 """)
 namespace Root {
   @tag("Node Status")
@@ -60,9 +59,9 @@ namespace Root {
 
     @summary("Leave Network")
     @delete
-    op delNetwork(@path network_id: ZTNetworkID): {
-      result: true;
-    } | AuthError | NotFoundError;
+    op delNetwork(
+      @path network_id: ZTNetworkID,
+    ): LeaveResult | AuthError | NotFoundError;
   }
 
   @tag("Peers")
@@ -74,7 +73,7 @@ namespace Root {
     op readNetworks(): Peer[] | AuthError;
 
     @route("/{network_id}")
-    @doc("Joined Network by ID")
+    @doc("Get Peer by ID")
     @summary("Get Joined Network by ID")
     @get
     op getNetwork(
@@ -213,6 +212,11 @@ namespace Root {
       }
     }
   }
+}
+
+@jsonSchema
+model LeaveResult {
+  result: true;
 }
 
 @jsonSchema
