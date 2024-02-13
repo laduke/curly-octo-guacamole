@@ -79,16 +79,12 @@ describe("GET endpoints", async function () {
   }
 });
 
-describe("Controller API", async function () {
+describe("API exercise", async function () {
   const client = createCreateClient();
   let network_id: string;
+  const node_id = "1122334455";
 
-  it("Gets status for later", async () => {
-    const { data } = await client.GET("/status");
-    assert(data);
-  });
-
-  it("Creates valid networks", async () => {
+  it("Creates valid controller networks", async () => {
     const { data: networkData } = await client.POST("/controller/network", {
       body: {},
     });
@@ -101,7 +97,7 @@ describe("Controller API", async function () {
     network_id = networkData.id;
   });
 
-  it("Gets the network by ID", async () => {
+  it("Gets the controller network by ID", async () => {
     const { data } = await client.GET("/controller/network/{network_id}", {
       params: { path: { network_id } },
     });
@@ -112,7 +108,7 @@ describe("Controller API", async function () {
     assertValid(networkValidator, data);
   });
 
-  it("Lists networks ", async () => {
+  it("Lists controller networks ", async () => {
     const { data } = await client.GET("/controller/network");
     assert(data);
 
@@ -120,6 +116,52 @@ describe("Controller API", async function () {
 
     assertValid(networkValidator, data);
     assert.ok(data.includes(network_id));
+  });
+
+  it("Creates a  controller network member", async () => {
+    const { data } = await client.POST(
+      "/controller/network/{network_id}/member/{node_id}",
+      {
+        params: { path: { network_id, node_id } },
+        body: { authorized: true, name: "bob" },
+      },
+    );
+    assert(data);
+
+    const validator = createValidator("ControllerNetworkMember");
+
+    assertValid(validator, data);
+
+    assert.equal(data.name, "bob");
+    assert.equal(data.id, "1122334455");
+  });
+
+  it("Lists controller network members", async () => {
+    const { data } = await client.GET(
+      "/controller/network/{network_id}/member",
+      { params: { path: { network_id } } },
+    );
+    assert(data);
+
+    const validator = createValidator("ControllerNetworkMemberList");
+
+    assertValid(validator, data);
+
+    assert.ok(Object.keys(data).includes("1122334455"));
+  });
+
+  it("Deletes a controller network member", async () => {
+    const { data } = await client.DELETE(
+      "/controller/network/{network_id}/member/{node_id}",
+      {
+        params: { path: { network_id, node_id } },
+      },
+    );
+    assert(data);
+
+    const validator = createValidator("ControllerNetworkMember");
+
+    assertValid(validator, data);
   });
 
   it("Deletes the network by ID", async () => {
