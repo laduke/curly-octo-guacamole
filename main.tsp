@@ -170,21 +170,6 @@ namespace Root {
             ): ControllerNetworkMember | AuthError | NotFoundError;
           }
         }
-        @route("/member2")
-        @doc("List all Network Members")
-        @summary("List all Network Members")
-        @get
-        op listNetworkMembers2(
-          @doc("Network ID of the Network")
-          @path
-          network_id: ZTNetworkID,
-        ): {
-          data: ControllerNetworkMember[];
-          meta: {
-            totalCount: uSafeint;
-            authorizedCount: uSafeint;
-          };
-        } | AuthError | NotFoundError;
       }
       @route("/")
       namespace randomNetwork {
@@ -221,13 +206,7 @@ namespace Root {
               @doc("Network ID of the Network")
               @path
               network_id: ZTNetworkID,
-            ): {
-              data: ControllerNetworkMember[];
-              meta: {
-                totalCount: uSafeint;
-                authorizedCount: uSafeint;
-              };
-            } | AuthError | NotFoundError;
+            ): ControllerNetworkMemberListFull | AuthError | NotFoundError;
           }
         }
       }
@@ -519,6 +498,15 @@ scalar domain extends string;
 
 @jsonSchema
 model ControllerNetworkMemberList is Record<int32>;
+
+@jsonSchema
+model ControllerNetworkMemberListFull {
+  data: ControllerNetworkMember[];
+  meta: {
+    totalCount: uSafeint;
+    authorizedCount: uSafeint;
+  };
+}
 
 @minValue(0)
 scalar Port extends uint16;
