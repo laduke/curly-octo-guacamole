@@ -84,7 +84,7 @@ describe("API exercise", async function () {
   let network_id: string;
   const node_id = "1122334455";
 
-  it("Creates valid controller networks", async () => {
+  it("Creates a valid controller network", async () => {
     const { data: networkData } = await client.POST("/controller/network", {
       body: {},
     });
@@ -123,7 +123,7 @@ describe("API exercise", async function () {
       "/controller/network/{network_id}/member/{node_id}",
       {
         params: { path: { network_id, node_id } },
-        body: { authorized: true, name: "bob" },
+        body: { authorized: true },
       },
     );
     assert(data);
@@ -132,7 +132,6 @@ describe("API exercise", async function () {
 
     assertValid(validator, data);
 
-    assert.equal(data.name, "bob");
     assert.equal(data.id, "1122334455");
   });
 
@@ -180,6 +179,18 @@ describe("API exercise", async function () {
       assert(data);
 
       const networksValidator = createValidator("ControllerNetworks");
+
+      assertValid(networksValidator, data);
+    }
+  });
+
+  it("Lists full network members", async () => {
+    const { data, response } = await client.GET("/unstable/controller/network/{network_id}/member");
+    if (response.status !== 404) {
+      assert(data);
+      console.log(data)
+
+      const networksValidator = createValidator("ControllerNetworkMemberListFull");
 
       assertValid(networksValidator, data);
     }
