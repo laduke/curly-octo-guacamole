@@ -7,6 +7,7 @@ The specs are generated from a [typespec](https://typespec.io/) spec.
 
 xxx
 yyy
+zzz
 
 ## dev
 
